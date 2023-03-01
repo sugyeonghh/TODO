@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 public class TodoDto {
@@ -25,6 +26,7 @@ public class TodoDto {
 
 		private String title;
 
+		@Positive
 		private int todoOrder;
 
 		private boolean completed;
