@@ -1,57 +1,62 @@
 package com.singleproject.todo.service;
 
 
+import com.singleproject.exception.BusinessLogicException;
+import com.singleproject.exception.ExceptionCode;
 import com.singleproject.todo.entity.Todos;
 import com.singleproject.todo.repository.TodoRepository;
+import com.singleproject.utils.CustomBeanUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TodoService {
 	private final TodoRepository todoRepository;
+	private final CustomBeanUtils<Todos> customBeanUtils;
 
 	public Todos createTodo(Todos todos) {
 		return todoRepository.save(todos);
 	}
 
 	public Todos updateTodo(Todos todos) {
-		Todos findTodo = findVerifiedTodo(todos.getId());
+		Todos findTodo = findVerifiedTodo(todos.getTodoId());
 
-		Optional.ofNullable(todos.getTodoOrder()).ifPresent(findTodo::setTodoOrder);
-		Optional.ofNullable(todos.getTitle()).ifPresent(findTodo::setTitle);
-		Optional.ofNullable(todos.isCompleted()).ifPresent(findTodo::setCompleted);
-
-		return todoRepository.save(findTodo);
+		Todos updateTodo = customBeanUtils.copyNonNullProperties(todos, findTodo);
+		return findTodo;
 	}
 
+	@Transactional(readOnly = true)
 	public Todos findTodo(int id) {
 		return findVerifiedTodo(id);
 	}
 
-	public List<Todos> findAllTodo() {
-		return todoRepository.findAll();
+	@Transactional(readOnly = true)
+	public Page<Todos> findAllTodo(int page, int size, String sortDir, String sortBy) {
+		return todoRepository.findAll(PageRequest.of(page - 1, size, Sort.Direction.valueOf(sortDir), sortBy));
 	}
 
 	public void deleteTodo(int id) {
-		todoRepository.delete(findVerifiedTodo(id));
+		findVerifiedTodo(id);
+		todoRepository.deleteById(id);
 	}
 
 	public void deleteAllTodo() {
-		List<Todos> todoList = todoRepository.findAll();
-
-		for (Todos todo : todoList) {
-			todoRepository.delete(todo);
-		}
+		todoRepository.deleteAll();
 	}
 
+	@Transactional(readOnly = true)
 	private Todos findVerifiedTodo(int id) {
 		Optional<Todos> optionalTodos = todoRepository.findById(id);
 
-		Todos todo = optionalTodos.orElseThrow();
+		Todos todo = optionalTodos.orElseThrow(() -> new BusinessLogicException(ExceptionCode.TODO_NOT_FOUND));
 		return todo;
 	}
 }
