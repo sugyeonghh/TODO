@@ -20,11 +20,11 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/todos")
 @RequiredArgsConstructor
 @Validated
 public class TodoController {
-	private static final String TODO_DEFAULT_URL = "/todo";
+	private static final String TODO_DEFAULT_URL = "/todos";
 	private final TodoMapper mapper;
 	private final TodoService todoService;
 
