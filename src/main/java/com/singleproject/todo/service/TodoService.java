@@ -20,7 +20,7 @@ import java.util.Optional;
 @Transactional
 public class TodoService {
 	private final TodoRepository todoRepository;
-	private final CustomBeanUtils<Todos> customBeanUtils;
+	private final CustomBeanUtils<Todos> beanUtils;
 
 	public Todos createTodo(Todos todos) {
 		return todoRepository.save(todos);
@@ -29,7 +29,7 @@ public class TodoService {
 	public Todos updateTodo(Todos todos) {
 		Todos findTodo = findVerifiedTodo(todos.getTodoId());
 
-		Todos updateTodo = customBeanUtils.copyNonNullProperties(todos, findTodo);
+		Todos updateTodo = beanUtils.copyNonNullProperties(todos, findTodo);
 		return findTodo;
 	}
 

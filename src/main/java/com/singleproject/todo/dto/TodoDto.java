@@ -27,9 +27,9 @@ public class TodoDto {
 		private String title;
 
 		@Positive
-		private int todoOrder;
+		private Integer todoOrder;
 
-		private boolean completed;
+		private Boolean completed;
 	}
 
 	@Getter

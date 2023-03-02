@@ -20,8 +20,8 @@ public class Todos extends Auditable {
 	private String title;
 
 	@Column(nullable = false)
-	private int todoOrder;
+	private Integer todoOrder;
 
 	@Column(nullable = false)
-	private boolean completed;
+	private Boolean completed;
 }
